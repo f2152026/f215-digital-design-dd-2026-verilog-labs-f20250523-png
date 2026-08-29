@@ -17,6 +17,9 @@
 //   endgenerate
 //   assign cout = c[64];
 
+// rca64.v
+// 64-bit ripple-carry adder using 64 FA_Gate instances.
+
 module rca64(
   input  [63:0] a,
   input  [63:0] b,
@@ -25,6 +28,36 @@ module rca64(
   output        cout
 );
 
-  // TODO: your 64-bit ripple-carry structure goes here.
+  wire [63:1] c;
+
+  FA_Gate FA0 (
+    .a(a[0]),
+    .b(b[0]),
+    .cin(cin),
+    .sum(sum[0]),
+    .cout(c[1])
+  );
+
+  genvar i;
+  generate
+    for (i = 1; i < 63; i = i + 1) begin : gen_fa
+      FA_Gate FA (
+        .a(a[i]),
+        .b(b[i]),
+        .cin(c[i]),
+        .sum(sum[i]),
+        .cout(c[i+1])
+      );
+    end
+  endgenerate
+
+  FA_Gate FA63 (
+    .a(a[63]),
+    .b(b[63]),
+    .cin(c[63]),
+    .sum(sum[63]),
+    .cout(cout)
+  );
 
 endmodule
+
